@@ -39,6 +39,7 @@ class LLMAgentService:
              ChatGroq: An active, authenticated Groq LLM instance.
         """
         return ChatGroq(
+            max_tokens=3500,
             model=self.model_name,
             temperature=self.temperature,
             api_key=self.api_key

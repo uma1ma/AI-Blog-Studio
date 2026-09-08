@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Diffusion Models for Generative AI: Theory & Training",
+    "topic": "Diffusion Models for Generative AI: Theory, Training, and Applications",
+    "subtopics": "Mathematical Foundations of Diffusion Processes, Training Stable Diffusion Models, Practical Applications (image generation, inpainting, upscaling), Deployment and Optimization on GPUs/TPUs",
+    "description": "Explore diffusion models, their theory, training, and real‑world applications. Learn the math, code, and deployment tips for state‑of‑the‑art generative AI.",
+    "slug": "diffusion-models-generative-ai-theory-training",
+    "date": "2026-09-08",
+    "read_time": "9 min",
+    "file": "blogs/ml/diffusion-models-generative-ai-theory-training.md"
+  }
+]

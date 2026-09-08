@@ -1,5 +1,6 @@
-// This file provides frontend configuration variables.
-// It should not be committed (added to .gitignore).
+// Frontend configuration
+// Articles are served from the local project data directory.
+
 window.CONFIG = {
-    R2_PUBLIC_URL: "https://pub-dc2d6fa38dd34e9c9398d723b321e423.r2.dev"
+    DATA_BASE_URL: "../data"
 };

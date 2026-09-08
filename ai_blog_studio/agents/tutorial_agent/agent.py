@@ -3,7 +3,7 @@ import re
 import math
 from ai_blog_studio.graph.state import BlogState
 from ai_blog_studio.services.llm import LLMAgentService
-from ai_blog_studio.services.storage import R2StorageService
+from ai_blog_studio.services.storage import LocalStorageService
 from ai_blog_studio.config.settings import app_settings
 from ai_blog_studio.services.prompt_manager import prompt_manager
 from .prompts import TUTORIAL_TOPIC_PROMPT, TUTORIAL_GENERATION_PROMPT
@@ -18,7 +18,7 @@ def tutorial_node(state: BlogState) -> BlogState:
     trace = list(state.get("agent_trace", []))
     trace.append("Tutorial Agent")
     
-    storage = R2StorageService()
+    storage = LocalStorageService()
     
     # --- Step 1: Topic Selection (if not already strictly defined by State) ---
     topic = state.get("topic")

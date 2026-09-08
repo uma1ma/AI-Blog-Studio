@@ -82,20 +82,20 @@ const ALL_CATEGORIES = ['ml', 'dl', 'nlp', 'cv', 'genai', 'ainews', 'statistics'
 /* ── Cache ─────────────────────────────────────────────── */
 const _cache = {};
 
-const R2_PUBLIC_URL = (typeof window !== 'undefined' && window.CONFIG && window.CONFIG.R2_PUBLIC_URL)
-  ? window.CONFIG.R2_PUBLIC_URL
-  : 'https://missing-config-js.r2.dev';
+const DATA_BASE_URL = (typeof window !== 'undefined' && window.CONFIG && window.CONFIG.DATA_BASE_URL)
+  ? window.CONFIG.DATA_BASE_URL
+  : '../data';
 
 /* ── Core Fetch ────────────────────────────────────────── */
 /**
- * Load articles.json from the Cloudflare R2 bucket.
+ * Load articles.json from the local data directory.
  * Returns [] if the request fails (i.e. empty category).
  */
 async function loadCategoryArticles(cat) {
   if (_cache[cat] !== undefined) return _cache[cat];
 
   try {
-    const res = await fetch(`${R2_PUBLIC_URL}/blogs/${cat}/articles.json`);
+    const res = await fetch(`${DATA_BASE_URL}/blogs/${cat}/articles.json`);
     if (!res.ok) {
       _cache[cat] = [];
       return [];

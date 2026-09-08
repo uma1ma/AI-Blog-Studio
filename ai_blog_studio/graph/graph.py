@@ -12,7 +12,6 @@ MAX_REVISIONS = 3
 
 def _route_start(state: BlogState) -> str:
     """Select the generation path based on the requested domain."""
-
     if state.get("skipped"):
         return END
 
@@ -23,8 +22,12 @@ def _route_start(state: BlogState) -> str:
 
 
 def _route_after_validator(state: BlogState) -> str:
-    """Route approved content to END or rejected content back for revision."""
+    """
+    Route approved content to END.
 
+    Rejected content is sent back for revision while the maximum
+    number of revisions has not been reached.
+    """
     revision_needed = state.get("revision_needed", False)
     revision_count = state.get("revision_count", 0)
 
