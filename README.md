@@ -1,119 +1,302 @@
-# <a href="https://kalyanm45.github.io/AI Blog Studio-AI-Blog-Generator/">AI Blog Studio — Autonomous AI Article Generator</a>
+# AI Blog Studio
 
-<p align="center"> <img src="https://img.shields.io/github/license/KalyanM45/AI Blog Studio-AI-Blog-Generator?style=ROUND" alt="License" /> <img src="https://img.shields.io/github/stars/KalyanM45/AI Blog Studio-AI-Blog-Generator?style=ROUND" alt="Stars" /> <img src="https://img.shields.io/github/forks/KalyanM45/AI Blog Studio-AI-Blog-Generator?style=ROUND" alt="Forks" /> <img src="https://img.shields.io/github/issues/KalyanM45/AI Blog Studio-AI-Blog-Generator?style=ROUND"alt="Issues" />
-</p>
+**AI Blog Studio** is a multi-agent AI system for generating, validating, revising, and publishing technical blog articles.
 
-## About The Project
+The project uses **LangGraph** to coordinate specialized agents and **Groq-hosted LLMs** to generate technical content. Generated articles are passed through an editorial validation step, and rejected drafts are automatically sent back to the appropriate generation agent for revision.
 
-AI Blog Studio is an end-to-end, fully automated blogging platform. It autonomously schedules, writes, formats, and publishes deep-dive technical articles on Machine Learning and Artificial Intelligence directly to a fast, static frontend website.
+## Features
 
-Powered by **LangGraph** for stateful workflow execution and **Groq** for blazing-fast LLM inference, it ensures that high-quality, zero-fluff, production-grade articles are generated and deployed automatically via **GitHub Actions**.
+* **Multi-agent workflow** built with LangGraph
+* **Automatic topic selection** based on the selected content domain and recent article history
+* **AI article generation** using Groq-hosted LLMs
+* **Editorial validation** of generated articles
+* **Automatic revision loop** when an article does not meet the publication criteria
+* **Structured metadata generation** including title, description, slug, and reading time
+* **Markdown article publishing**
+* **Local filesystem storage** for generated articles and article metadata
+* **Domain-based organization** of generated content
+* **Static frontend** for browsing generated articles
+* **Dry-run mode** for testing the workflow without making an LLM generation request
 
-## Library Requirements
+## How It Works
 
- - Python 3.12+
- - langgraph>=0.2.20
- - groq>=0.11.0
- - python-dotenv>=1.0.1
- - uv (for dependency management)
+The generation pipeline follows a simple agent workflow:
 
-## Getting Started
+```text
+                    ┌─────────────────┐
+                    │   Start / Run   │
+                    └────────┬────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   Topic Selection   │
+                  │  / Existing Topic  │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   Tutorial / News   │
+                  │       Agent         │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   Article Draft     │
+                  │     Generation      │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │  Validator Agent    │
+                  └──────────┬──────────┘
+                             │
+                    ┌────────┴────────┐
+                    │                 │
+                  Reject            Approve
+                    │                 │
+                    ▼                 ▼
+              Regenerate         Save Article
+                    │                 │
+                    └───────►─────────┘
+```
 
-This will help you understand how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+### Agents
 
-## Installation Steps
+#### Tutorial Agent
 
-### Installation from GitHub
+Responsible for:
 
-Follow these steps to install and set up the project directly from the GitHub repository:
+* Selecting a suitable technical topic when one is not provided
+* Generating the complete article
+* Incorporating validator feedback during revisions
+* Calculating estimated reading time
 
-1. **Clone the Repository**
-   - Open your terminal or command prompt.
-   - Navigate to the directory where you want to install the project.
-   - Run the following command to clone the GitHub repository:
-     ```bash
-     git clone https://github.com/KalyanM45/AI Blog Studio-AI-Blog-Generator.git
-     ```
+#### News Agent
 
-2. **Create a Virtual Environment** (Recommended)
-   - It's a good practice to create a virtual environment to manage project dependencies. Run the following command:
-     ```bash
-     uv venv
-     ```
+Handles articles for the AI/news domain using the same LangGraph workflow.
 
-3. **Activate the Virtual Environment**
-   - Activate the virtual environment based on your operating system:
-       ```bash
-       # On Linux/Mac:
-       source .venv/bin/activate
-       # On Windows:
-       .venv\Scripts\activate
-       ```
+#### Validator Agent
 
-4. **Install Dependencies**
-   - Navigate to the project directory:
-     ```bash
-     cd AI Blog Studio-AI-Blog-Generator
-     ```
-   - Run the following command to install project dependencies:
-     ```bash
-     uv pip install -r backend/requirements.txt
-     ```
+Acts as the final editorial quality checker.
 
-5. **Run the Project**
-   - Start the backend pipeline by running the appropriate command:
-     ```bash
-     python backend/run.py
-     ```
+It evaluates whether the generated article:
 
-6. **Access the Project**
-   - Serve the frontend locally using Python's built-in HTTP server:
-     ```bash
-     python -m http.server 8000 --directory frontend
-     ```
-   - Open a web browser and navigate to `http://localhost:8000`.
+* Is substantial enough to publish
+* Clearly addresses the requested topic
+* Has a coherent structure
+* Uses sensible Markdown
+* Has a complete ending
+* Avoids obvious placeholders or severe formatting issues
 
+If the article is rejected, the validator provides feedback and the generation agent produces a revised version.
 
-## API Key Setup
+## Tech Stack
 
-To use this project, you need an API key from Groq to power the Large Language Model inference. Follow these steps to obtain and set up your API key:
+* **Python**
+* **LangGraph** — agent workflow orchestration
+* **LangChain**
+* **Groq** — LLM inference
+* **Pydantic** — configuration and validation
+* **uv** — Python dependency management
+* **Markdown** — generated article format
+* **JavaScript / HTML / CSS** — static frontend
 
-1. **Get API Key:**
-   - Visit the Groq Console at [console.groq.com](https://console.groq.com/).
-   - Follow the instructions to create an account and obtain your API key.
+## Project Structure
 
-2. **Set Up API Key:**
-   - Create a file named `.env` in the project root.
-   - Add your API key to the `.env` file:
-     ```dotenv
-     GROQ_API_KEY=your_api_key_here
-     ```
+```text
+AI-Blog-Studio/
+│
+├── ai_blog_studio/
+│   ├── agents/
+│   │   ├── tutorial_agent/
+│   │   ├── news_agent/
+│   │   └── validator_agent/
+│   │
+│   ├── config/
+│   │   └── settings.py
+│   │
+│   ├── graph/
+│   │   ├── graph.py
+│   │   └── state.py
+│   │
+│   ├── services/
+│   │   ├── llm.py
+│   │   ├── storage.py
+│   │   └── prompt_manager.py
+│   │
+│   ├── web/
+│   │   ├── js/
+│   │   └── ...
+│   │
+│   └── run.py
+│
+├── data/
+│   └── blogs/
+│       └── <domain>/
+│           ├── articles.json
+│           └── *.md
+│
+├── .env.example
+├── pyproject.toml
+├── uv.lock
+└── LICENSE
+```
 
-   **Note:** Keep your API key confidential. Do not share it publicly or expose it in your code.<br>
+## Requirements
 
-## Contributing
+* Python 3.13+
+* `uv`
+* A Groq API key
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+## Installation
 
-• **Report bugs**: If you encounter any bugs, please let us know. Open up an issue and let us know the problem.
+Clone the repository:
 
-• **Contribute code**: If you are a developer and want to contribute, follow the instructions below to get started!
+```bash
+git clone https://github.com/uma1ma/AI-Blog-Studio.git
+cd AI-Blog-Studio
+```
 
-1. Fork the Project
-2. Create your Feature Branch
-3. Commit your Changes
-4. Push to the Branch
-5. Open a Pull Request
+Install the project dependencies:
 
-• **Suggestions**: If you don't want to code but have some awesome ideas, open up an issue explaining some updates or improvements you would like to see!
+```bash
+uv sync
+```
 
-#### Don't forget to give the project a star! Thanks again!
+Create your environment file:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and add your Groq API key.
+
+For example:
+
+```text
+llm__api_key="your_groq_api_key"
+```
+
+Do **not** commit your `.env` file or expose your API key publicly.
+
+## Running the Project
+
+Run the complete article-generation pipeline with:
+
+```bash
+uv run python -m ai_blog_studio.run
+```
+
+The system will:
+
+1. Select a content domain and topic when required.
+2. Generate an article using the appropriate agent.
+3. Send the draft to the validator.
+4. Reject and regenerate the article if a major issue is detected.
+5. Approve the article when it meets the publication criteria.
+6. Save the final article as Markdown.
+7. Update the domain's `articles.json` metadata.
+
+### Dry Run
+
+To test the workflow without performing the full LLM generation:
+
+```bash
+uv run python -m ai_blog_studio.run --dry-run
+```
+
+## Generated Content
+
+Generated articles are stored locally under:
+
+```text
+data/blogs/
+```
+
+For example:
+
+```text
+data/blogs/ml/
+├── articles.json
+└── diffusion-models-generative-ai-theory-training.md
+```
+
+The metadata file contains information such as:
+
+* Article title
+* Topic
+* Subtopics
+* Description
+* URL slug
+* Date
+* Reading time
+* Markdown file location
+
+## Example Workflow
+
+A successful generation can include multiple validation cycles.
+
+For example:
+
+```text
+TutorialAgent
+      ↓
+Generate article
+      ↓
+ValidatorAgent
+      ↓
+Rejected
+      ↓
+Validator feedback
+      ↓
+TutorialAgent
+      ↓
+Generate revised article
+      ↓
+ValidatorAgent
+      ↓
+Approved
+      ↓
+Save Markdown + metadata
+```
+
+This allows the system to improve an article automatically rather than simply accepting the first generated draft.
+
+## Frontend
+
+The project includes a lightweight static frontend for browsing generated articles.
+
+Article data is loaded from the local `data/` directory, allowing the generated Markdown content and metadata to be viewed without requiring a cloud object-storage service.
+
+## Configuration
+
+The main configuration is handled through environment variables.
+
+The `.env.example` file contains placeholders for the supported services.
+
+The core LLM configuration uses:
+
+```text
+llm__api_key="your_groq_api_key"
+```
+
+Optional integrations such as content APIs, Opik tracing, and Sentry can be configured when required.
+
+## Project Status
+
+The core pipeline has been tested end-to-end:
+
+* Topic selection: working
+* Article generation: working
+* Validator: working
+* Revision workflow: working
+* Markdown publishing: working
+* Local article storage: working
+* Article metadata generation: working
+* Static frontend data loading: implemented
 
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT) - see the [LICENSE](LICENSE) file for details.<br>
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Acknowledgements
-
-We'd like to extend our gratitude to all individuals and organizations who have played a role in the development and success of this project. Your support, whether through contributions, inspiration, or encouragement, has been invaluable. Thank you for being a part of our journey.
+This repository is an adaptation of an MIT-licensed multi-agent blog-generation project. The original license and applicable attribution have been retained in accordance with the license terms.
